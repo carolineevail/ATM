@@ -5,6 +5,11 @@ public class Account {
     String name;
     String action;
 
+    public Account() {
+
+    }
+
+
     public void chooseName() throws Exception {
         System.out.println("Please enter your name.");
         name = AutomatedTeller.scanner.nextLine();
@@ -17,26 +22,39 @@ public class Account {
         }
     }
 
-    public void chooseAction() throws Exception {
-        System.out.println("What would you like to do? [Check my balance/Withdraw Funds/Cancel]");
+    public boolean chooseAction() throws Exception {
+        System.out.println("What would you like to do? [Check my Balance/Withdraw Funds/Delete Account/Cancel]");
         action = AutomatedTeller.scanner.nextLine();
 
-        if (action.equalsIgnoreCase("Check my balance")) {
-            System.out.println("Your balance is $100");
+
+        Double balance = AutomatedTeller.accounts.get(name);
+        if (action.equalsIgnoreCase("Check my Balance")) {
+            System.out.println("Your balance is $" + balance + ".");
         }
         else if (action.equalsIgnoreCase("Cancel")) {
             System.out.println("Thank you and please come again.");
+            return false;
         }
         else if (action.equalsIgnoreCase("Withdraw Funds")) {
             System.out.println("Enter the amount you'd lke to withdraw.");
             String withdrawAmount = AutomatedTeller.scanner.nextLine();
+
             int withdrawInt = Integer.valueOf(withdrawAmount);
-            if (withdrawInt <= 100) {
+            if (withdrawInt <= balance) {
                 System.out.println("Please take your cash.");
+                AutomatedTeller.accounts.put(name, balance - withdrawInt);
             }
-            else if (withdrawInt > 100) {
-                throw new Exception("You may only withdraw up to $100.");
+            else if (withdrawInt > balance) {
+                throw new Exception("You may only withdraw up to " + balance + ".");
             }
         }
+
+        else if (action.equalsIgnoreCase("Delete Account")) {
+            AutomatedTeller.accounts.remove(name);
+            System.out.println("Your account has been deleted.");
+            return false;
+        }
+
+        return true;
     }
 }
